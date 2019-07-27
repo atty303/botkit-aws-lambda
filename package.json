@@ -1,0 +1,24 @@
+{
+  "name": "botkit-aws-lambda",
+  "version": "1.0.0",
+  "description": "",
+  "main": "bot.js",
+  "scripts": {
+    "serve": "ts-node src/bot.ts",
+    "build": "parcel build -d functions/bot -o index.js -t node --no-source-maps src/bot.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "botbuilder-adapter-slack": "^1.0.4",
+    "botbuilder-storage-mongodb": "^0.9.5",
+    "botkit": "^4.5.0",
+    "dotenv": "^7.0.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.0",
+    "@types/node": "^12.6.8",
+    "parcel-bundler": "^1.12.3",
+    "ts-node": "^8.3.0",
+    "typescript": "^3.5.3"
+  }
+}

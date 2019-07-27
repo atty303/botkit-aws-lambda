@@ -1,0 +1,9 @@
+{
+  "name": "botkit-aws-lambda",
+  "description": "",
+  "runtime": "nodejs10.x",
+  "memory": 128,
+  "timeout": 15,
+  "role": "arn:aws:iam::492616182603:role/botkit-aws-lambda_lambda_function",
+  "environment": {}
+}
