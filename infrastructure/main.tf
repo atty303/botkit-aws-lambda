@@ -4,6 +4,14 @@ terraform {
   required_providers {
     aws     = ">= 2.21.0"
   }
+
+  backend "s3" {
+    region = "ap-northeast-1"
+    bucket = "atty303-terraform"
+    key = "botkit-aws-lambda/terraform.tfstate"
+    workspace_key_prefix = "env:"
+    dynamodb_table = "terraform_backend"
+  }
 }
 
 data "aws_region" "current" {}
@@ -55,10 +63,5 @@ resource "aws_lambda_permission" "invoke_api" {
   action        = "lambda:InvokeFunction"
   function_name = var.apex_function_bot
   principal     = "apigateway.amazonaws.com"
-  //source_arn = "${aws_api_gateway_deployment.api.execution_arn}/*/*/*"
   source_arn    = "arn:aws:execute-api:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:${aws_api_gateway_rest_api.api.id}/*/*"
-}
-
-output "base_url" {
-  value = aws_api_gateway_deployment.api.invoke_url
 }
