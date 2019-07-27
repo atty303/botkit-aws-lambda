@@ -4,3 +4,4 @@ functions/bot/*.js
 .idea
 *.iml
 .terraform
+.cache
