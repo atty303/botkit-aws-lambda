@@ -16,7 +16,13 @@ yarn serve
 
 ```bash
 yarn build
-apex deploy
+apex deploy \
+  -s clientId=$clientId \
+  -s clientSecret=$clientSecret \
+  -s verificationToken=$verificationToken \
+  -s clientSigningSecret=$clientSigningSecret \
+  -s botToken=$botToken \
+  bot
 ```
 
 ## invoke

@@ -28,9 +28,6 @@ if (process.env.MONGO_URI) {
 }
 
 const adapter = new SlackAdapter({
-  // REMOVE THIS OPTION AFTER YOU HAVE CONFIGURED YOUR APP!
-  enable_incomplete: true,
-
   // parameters used to secure webhook endpoint
   verificationToken: process.env.verificationToken,
   clientSigningSecret: process.env.clientSigningSecret,
@@ -58,6 +55,7 @@ adapter.use(new SlackMessageTypeMiddleware())
 
 
 const controller = new Botkit({
+  adapter,
   webhook_uri: '/api/messages',
   webserver_middlewares: [],
   webserver,
