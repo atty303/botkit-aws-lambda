@@ -6,7 +6,11 @@
 
 // Import Botkit's core features
 import {Botkit} from 'botkit'
-import * as express from 'express'
+import express from 'express'
+import serverlessExpress from 'aws-serverless-express'
+
+import {webserver} from './webserver'
+import {register} from './features'
 
 // Import a platform-specific adapter for <%= platform %>.
 import {SlackAdapter, SlackMessageTypeMiddleware, SlackEventMiddleware} from 'botbuilder-adapter-slack'
@@ -52,13 +56,26 @@ adapter.use(new SlackEventMiddleware())
 // Use SlackMessageType middleware to further classify messages as direct_message, direct_mention, or mention
 adapter.use(new SlackMessageTypeMiddleware())
 
+
 const controller = new Botkit({
   webhook_uri: '/api/messages',
   webserver_middlewares: [],
+  webserver,
   // storage
 })
 
-import {register} from './features'
+import * as http from 'http'
+
+if (process.env.MODE === 'lambda') {
+  const server = serverlessExpress.createServer(webserver)
+  exports.handle = (event: any, context: any) => serverlessExpress.proxy(server, event, context)
+} else {
+  const socket = http.createServer(webserver)
+  socket.listen(process.env.port || process.env.PORT || 3000, () => {
+    console.log(`Webhook endpoint online:  http://localhost:${ process.env.PORT || 3000 }${ controller.getConfig('webhook_uri') }`);
+  })
+}
+
 
 // Once the bot has booted up its internal services, you can use them to do stuff.
 controller.ready(() => {

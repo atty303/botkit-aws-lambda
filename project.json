@@ -1,9 +1,11 @@
 {
   "name": "botkit-aws-lambda",
-  "description": "",
+  "description": "Slack bot",
   "runtime": "nodejs10.x",
   "memory": 128,
   "timeout": 15,
   "role": "arn:aws:iam::492616182603:role/botkit-aws-lambda_lambda_function",
-  "environment": {}
+  "environment": {
+    "MODE": "lambda"
+  }
 }
