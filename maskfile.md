@@ -25,8 +25,20 @@ apex deploy \
   bot
 ```
 
-## invoke
+## plan
 
 ```bash
-apex invoke hello
+apex infra plan
+```
+
+## apply
+
+```bash
+apex infra apply
+```
+
+## logs
+
+```bash
+apex logs
 ```

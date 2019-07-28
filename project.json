@@ -6,6 +6,7 @@
   "timeout": 15,
   "role": "arn:aws:iam::492616182603:role/botkit-aws-lambda_lambda_function",
   "environment": {
-    "MODE": "lambda"
+    "MODE": "lambda",
+    "S3_BUCKET_NAME": "atty303-default-botkit-storage"
   }
 }

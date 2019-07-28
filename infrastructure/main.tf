@@ -14,8 +14,45 @@ terraform {
   }
 }
 
+locals {
+  role_elems = split("/", var.apex_function_role)
+  role_name = local.role_elems[length(local.role_elems) - 1]
+}
+
 data "aws_region" "current" {}
 data "aws_caller_identity" "current" {}
+
+resource aws_s3_bucket storage {
+  bucket = "atty303-${terraform.workspace}-botkit-storage"
+  acl = "private"
+}
+
+data aws_iam_policy_document lambda {
+  statement {
+    sid = "1"
+
+    actions = [
+      "s3:*",
+    ]
+
+    resources = [
+      "arn:aws:s3:::${aws_s3_bucket.storage.id}",
+      "arn:aws:s3:::${aws_s3_bucket.storage.id}/*",
+    ]
+  }
+}
+
+resource aws_iam_policy lambda {
+  name        = "LambdaExecution"
+  description = "botkit lambda exection policy"
+
+  policy = data.aws_iam_policy_document.lambda.json
+}
+
+resource aws_iam_role_policy_attachment lambda_attach {
+  role       = local.role_name
+  policy_arn = aws_iam_policy.lambda.arn
+}
 
 resource aws_api_gateway_deployment api {
   depends_on  = ["aws_api_gateway_integration.proxy_any"]

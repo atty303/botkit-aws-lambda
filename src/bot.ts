@@ -6,6 +6,7 @@
 
 // Import Botkit's core features
 import {Botkit} from 'botkit'
+import S3Storage from 'botframework-s3storage'
 import express from 'express'
 import serverlessExpress from 'aws-serverless-express'
 
@@ -19,12 +20,12 @@ import {SlackAdapter, SlackMessageTypeMiddleware, SlackEventMiddleware} from 'bo
 // Load process.env values from .env file
 require('dotenv').config()
 
-// let storage = null
-// let mongoStorage = null
-if (process.env.MONGO_URI) {
-  // storage = mongoStorage = new MongoDbStorage({
-  //   url : process.env.MONGO_URI,
-  // })
+let storage: S3Storage | undefined
+if (process.env.S3_BUCKET_NAME) {
+  storage = new S3Storage(process.env.S3_BUCKET_NAME, {
+    region: 'ap-northeast-1',
+    apiVersion: '2006-03-01',
+  })
 }
 
 const adapter = new SlackAdapter({
@@ -43,8 +44,8 @@ const adapter = new SlackAdapter({
 
   // functions required for retrieving team-specific info
   // for use in multi-team apps
-  //getTokenForTeam: getTokenForTeam,
-  //getBotUserByTeam: getBotUserByTeam,
+  getTokenForTeam: getTokenForTeam,
+  getBotUserByTeam: getBotUserByTeam,
 })
 
 // Use SlackEventMiddleware to emit events that match their original Slack event types.
@@ -59,7 +60,7 @@ const controller = new Botkit({
   webhook_uri: '/api/messages',
   webserver_middlewares: [],
   webserver,
-  // storage
+  storage,
 })
 
 import * as http from 'http'
@@ -121,7 +122,7 @@ if (process.env.USERS) {
   userCache = JSON.parse(process.env.USERS)
 }
 
-async function getTokenForTeam(teamId: string) {
+async function getTokenForTeam(teamId: string): Promise<string> {
   if (tokenCache[teamId]) {
     return new Promise((resolve) => {
       setTimeout(function() {
@@ -129,11 +130,11 @@ async function getTokenForTeam(teamId: string) {
       }, 150)
     })
   } else {
-    console.error('Team not found in tokenCache: ', teamId)
+    throw new Error('Team not found in tokenCache: ' + teamId)
   }
 }
 
-async function getBotUserByTeam(teamId: string) {
+async function getBotUserByTeam(teamId: string): Promise<string> {
   if (userCache[teamId]) {
     return new Promise((resolve) => {
       setTimeout(function() {
@@ -141,6 +142,6 @@ async function getBotUserByTeam(teamId: string) {
       }, 150)
     })
   } else {
-    console.error('Team not found in userCache: ', teamId)
+    throw new Error('Team not found in userCache: ' + teamId)
   }
 }
